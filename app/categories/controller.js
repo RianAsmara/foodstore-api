@@ -21,6 +21,7 @@ try {
             })
         }
     }
+    next(err)
 }
 
 async function update (req, res, next) {
@@ -41,6 +42,7 @@ async function update (req, res, next) {
                 message: err.message
             })
         }
+        next(err)
     }
 }
 

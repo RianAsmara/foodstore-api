@@ -7,12 +7,12 @@ const os = require('os');
 const productController = require('./controller');
 
 router.get('/products', productController.index);
-router.post('/products/store', multer({
+router.post('/product/store', multer({
     dest: os.tmpdir()
 }).single('image'), productController.store);
-router.put('/products/update/:id', multer({
+router.put('/product/update/:id', multer({
     dest: os.tmpdir()
 }).single('image'), productController.update);
-router.delete('/products/delete/:id', productController.destroy);
+router.delete('/product/delete/:id', productController.destroy);
 
 module.exports = router;
