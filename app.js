@@ -10,6 +10,13 @@ var logger = require('morgan');
 const productRouter = require('./app/product/router')
 const categoryRouter = require('./app/categories/router')
 const tagRouter = require('./app/tags/router')
+const authRouter = require('./app/auth/router')
+
+// middleware
+const {
+  decodeToken
+} = require('./app/auth/middleware')
+
 
 var app = express();
 
@@ -17,6 +24,9 @@ var app = express();
 app.use('/api', productRouter);
 app.use('/api', categoryRouter);
 app.use('/api', tagRouter);
+app.use('/auth', authRouter);
+
+app.use(decodeToken());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

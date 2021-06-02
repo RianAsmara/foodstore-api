@@ -10,8 +10,19 @@ const fs = require('fs');
 
 const path = require('path');
 
+const {
+    getToken
+} = require('../utils/get-token')
+
+const {
+    policyFor
+} = require('../policy')
+
 async function index(req, res, next) {
     try {
+
+        let count = await Product.find(criteria).countDocuments
+
         let {
             limit = 10,
                 skip = 0,
@@ -69,16 +80,28 @@ async function index(req, res, next) {
             .populate('category')
             .populate('tags');
 
-        return res.json(products);
+        return res.json({
+            data: products,
+            count
+        });
     } catch (err) {
         next(err);
     }
 }
 
 async function store(req, res, next) {
-
     try {
+        let policy = policyFor(req.user)
+
+        if (!policy.can('create', 'Product')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
+
         let payload = req.body;
+
         if (payload.category) {
             let category =
                 await Category
@@ -138,7 +161,6 @@ async function store(req, res, next) {
             return res.json(product);
         }
     } catch (err) {
-        // ----- cek tipe error ---- //
         if (err && err.name === 'ValidationError') {
             return res.json({
                 error: 1,
@@ -152,6 +174,15 @@ async function store(req, res, next) {
 
 async function update(req, res, next) {
     try {
+        let policy = policyFor(req.user)
+
+        if (!policy.can('update', 'Product')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk mengupdate produk`
+            });
+        }
+
         let payload = req.body;
 
         if (payload.category) {
@@ -258,6 +289,15 @@ async function update(req, res, next) {
 
 async function destroy(req, res, next) {
     try {
+        let policy = policyFor(req.user)
+
+        if (!policy.can('delete', 'Product')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk menghapus produk`
+            });
+        }
+
         let product = await Product.findOneAndDelete({
             _id: req.params.id
         });
@@ -275,9 +315,50 @@ async function destroy(req, res, next) {
     }
 }
 
+async function me(req, res, next) {
+
+    if (!req.user) {
+        return res.json({
+            error: 1,
+            message: `Your're not login or token expired`
+        })
+    }
+    return res.json(req.user)
+}
+
+async function logout(req, res, next) {
+    let token = getToken(req)
+
+    let user = await User.findOneAndUpdate({
+        token: {
+            $in: [token]
+        }
+    }, {
+        $pull: {
+            token
+        }
+    }, {
+        useFindAndModify: false
+    });
+
+    if (!user || !token) {
+        return res.json({
+            error: 1,
+            message: 'No User Found!'
+        })
+    }
+
+    return res.json({
+        error: 0,
+        message: 'Logout Berhasil'
+    })
+}
+
 module.exports = {
     index,
     store,
     update,
-    destroy
+    destroy,
+    me,
+    logout
 };

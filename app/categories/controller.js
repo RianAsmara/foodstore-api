@@ -1,11 +1,11 @@
 const Category = require('./model')
 const config = require('../config');
 
-async function index (req, res, next) {
+async function index(req, res, next) {
     try {
         let {
             limit = 10,
-            skip = 0
+                skip = 0
         } = req.query;
 
         let category = await Category
@@ -19,17 +19,28 @@ async function index (req, res, next) {
     }
 }
 
-async function store (req,res,next) {
-try {
-    let payload = req.body
+async function store(req, res, next) {
+    try {
 
-    let category = new Category(payload)
+        let policy = policyFor(req.user)
 
-    await category.save()
+        if (!policy.can('create', 'Category')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk membuat kategori`
+            });
+        }
 
-    return res.json(category)
-    } catch (err) {cd
-        if(err && err.name == 'ValidationError') {
+        let payload = req.body
+
+        let category = new Category(payload)
+
+        await category.save()
+
+        return res.json(category)
+    } catch (err) {
+        cd
+        if (err && err.name == 'ValidationError') {
             return res.json({
                 error: 1,
                 message: err.message
@@ -39,19 +50,30 @@ try {
     next(err)
 }
 
-async function update (req, res, next) {
+async function update(req, res, next) {
     try {
-    let payload = req.body
 
-    let category = await Category.findOneAndUpdate({
-        _id: req.params.id
-    }, payload, { 
-        new:true, runValidators: true
-    })
+        let policy = policyFor(req.user)
 
-    return res.json(category)
+        if (!policy.can('update', 'Category')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk mengupdate kategori`
+            });
+        }
+
+        let payload = req.body
+
+        let category = await Category.findOneAndUpdate({
+            _id: req.params.id
+        }, payload, {
+            new: true,
+            runValidators: true
+        })
+
+        return res.json(category)
     } catch (err) {
-        if(err && err.name == 'ValidationError') {
+        if (err && err.name == 'ValidationError') {
             return res.json({
                 error: 1,
                 message: err.message
@@ -61,8 +83,17 @@ async function update (req, res, next) {
     }
 }
 
-async function destroy (req, res, next) {
+async function destroy(req, res, next) {
     try {
+        let policy = policyFor(req.user)
+
+        if (!policy.can('delete', 'Category')) {
+            return res.json({
+                error: 1,
+                message: `Anda tidak memiliki akses untuk menghapus kategori`
+            });
+        }
+
         let deleted = await Category.findOneAndDelete({
             _id: req.params.id
         })
