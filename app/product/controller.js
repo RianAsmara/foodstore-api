@@ -315,50 +315,9 @@ async function destroy(req, res, next) {
     }
 }
 
-async function me(req, res, next) {
-
-    if (!req.user) {
-        return res.json({
-            error: 1,
-            message: `Your're not login or token expired`
-        })
-    }
-    return res.json(req.user)
-}
-
-async function logout(req, res, next) {
-    let token = getToken(req)
-
-    let user = await User.findOneAndUpdate({
-        token: {
-            $in: [token]
-        }
-    }, {
-        $pull: {
-            token
-        }
-    }, {
-        useFindAndModify: false
-    });
-
-    if (!user || !token) {
-        return res.json({
-            error: 1,
-            message: 'No User Found!'
-        })
-    }
-
-    return res.json({
-        error: 0,
-        message: 'Logout Berhasil'
-    })
-}
-
 module.exports = {
     index,
     store,
     update,
-    destroy,
-    me,
-    logout
+    destroy
 };

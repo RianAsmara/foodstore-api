@@ -1,4 +1,4 @@
-// (1) import package yang diperlukan
+
 const router = require('express').Router();
 const multer = require('multer');
 const passport = require('passport');

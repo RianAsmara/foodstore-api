@@ -40,11 +40,12 @@ async function login(req, res, next) {
             message: 'email or password incorrect '
         })
         // (1) buat JSON Web Token
-        
+
         let signed = jwt.sign(
-            user, 
-            config.secretKey,
-            { expiresIn: '1h' }); // <--- ganti secret key dengan keymu sendiri, bebas yang sulit ditebak
+            user,
+            config.secretKey, {
+                expiresIn: '1h'
+            }); // <--- ganti secret key dengan keymu sendiri, bebas yang sulit ditebak
 
         // (2) simpan token tersebut ke user terkait
         await User.findOneAndUpdate({
@@ -89,8 +90,51 @@ async function localStrategy(email, password, done) {
     done()
 }
 
+
+async function me(req, res, next) {
+
+    if (!req.user) {
+        return res.json({
+            error: 1,
+            message: `Your're not login or token expired`
+        })
+    }
+    return res.json(req.user)
+}
+
+async function logout(req, res, next) {
+    let token = getToken(req)
+
+    let user = await User.findOneAndUpdate({
+        token: {
+            $in: [token]
+        }
+    }, {
+        $pull: {
+            token
+        }
+    }, {
+        useFindAndModify: false
+    });
+
+    if (!user || !token) {
+        return res.json({
+            error: 1,
+            message: 'No User Found!'
+        })
+    }
+
+    return res.json({
+        error: 0,
+        message: 'Logout Berhasil'
+    })
+}
+
+
 module.exports = {
     register,
     localStrategy,
-    login
+    login,
+    me,
+    logout
 }
