@@ -4,6 +4,7 @@ const multer = require('multer')
 
 const categoryController = require('./controller')
 
+router.get('/categories', categoryController.index);
 router.post('/category/store', multer().none(), categoryController.store)
 router.put('/category/update/:id', multer().none(), categoryController.update)
 router.delete('category/delete/:id', categoryController.destroy)

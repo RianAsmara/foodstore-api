@@ -7,12 +7,16 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 // import custom router
-const productRouter = require('./app/product/router');
+const productRouter = require('./app/product/router')
+const categoryRouter = require('./app/categories/router')
+const tagRouter = require('./app/tags/router')
 
 var app = express();
 
 // use custom router
 app.use('/api', productRouter);
+app.use('/api', categoryRouter);
+app.use('/api', tagRouter);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,9 +29,7 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({
-  extended: true
-}));
+
 
 
 // catch 404 and forward to error handler

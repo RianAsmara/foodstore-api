@@ -1,7 +1,22 @@
 const Category = require('./model')
+const config = require('../config');
 
-async function index () {
+async function index (req, res, next) {
+    try {
+        let {
+            limit = 10,
+            skip = 0
+        } = req.query;
 
+        let category = await Category
+            .find()
+            .limit(parseInt(limit))
+            .skip(parseInt(skip));
+
+        return res.json(category);
+    } catch (err) {
+        next(err);
+    }
 }
 
 async function store (req,res,next) {
@@ -13,7 +28,7 @@ try {
     await category.save()
 
     return res.json(category)
-    } catch (err) {
+    } catch (err) {cd
         if(err && err.name == 'ValidationError') {
             return res.json({
                 error: 1,

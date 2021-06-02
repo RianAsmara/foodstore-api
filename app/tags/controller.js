@@ -1,10 +1,25 @@
 const Tag = require('./model');
+const config = require('../config');
 
-async function index () {
+async function index(req, res, next) {
+    try {
+        let {
+            limit = 10,
+                skip = 0
+        } = req.query;
 
+        let tags = await Tag
+            .find()
+            .limit(parseInt(limit))
+            .skip(parseInt(skip));
+
+        return res.json(tags);
+    } catch (err) {
+        next(err);
+    }
 }
 
-async function store (req, res, next) {
+async function store(req, res, next) {
     try {
         let payload = req.body
 
@@ -22,21 +37,23 @@ async function store (req, res, next) {
             })
         }
         next(err)
-    }   
+    }
 }
 
-async function update (req, res, next) {
-    try{
+async function update(req, res, next) {
+    try {
         let payload = req.body;
 
-        let tag = await Tag.findOneAndUpdate({_id: req.params.id},payload,
-            {
-                new: true, runValidators: true
-            });
-        
+        let tag = await Tag.findOneAndUpdate({
+            _id: req.params.id
+        }, payload, {
+            new: true,
+            runValidators: true
+        });
+
         return res.json(tag);
-    } catch(err) {
-        if(err && err.name === 'ValidationError'){
+    } catch (err) {
+        if (err && err.name === 'ValidationError') {
             return res.json({
                 error: 1,
                 message: err.message,
@@ -47,11 +64,13 @@ async function update (req, res, next) {
     }
 }
 
-async function destroy (req, res, next) {
-    try{
-        let tag = await Tag.findOneAndDelete({_id: req.params.id});
+async function destroy(req, res, next) {
+    try {
+        let tag = await Tag.findOneAndDelete({
+            _id: req.params.id
+        });
         return res.json(tag); // <---
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
