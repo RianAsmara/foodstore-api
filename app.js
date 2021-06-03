@@ -12,6 +12,7 @@ const categoryRouter = require('./app/categories/router')
 const tagRouter = require('./app/tags/router')
 const authRouter = require('./app/auth/router')
 const provinsiRouter = require('./app/wilayah/router')
+const deliveryRouter = require('./app/delivery-address/router')
 
 // middleware
 const {
@@ -26,6 +27,7 @@ app.use('/api', productRouter);
 app.use('/api', categoryRouter);
 app.use('/api', tagRouter);
 app.use('/api', provinsiRouter);
+app.use('/api', deliveryRouter);
 app.use('/auth', authRouter);
 
 app.use(decodeToken());
