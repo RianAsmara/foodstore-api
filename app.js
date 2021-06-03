@@ -6,6 +6,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// cors
+const cors = require('cors');
+
 // import custom router
 const productRouter = require('./app/product/router')
 const categoryRouter = require('./app/categories/router')
@@ -13,6 +16,13 @@ const tagRouter = require('./app/tags/router')
 const authRouter = require('./app/auth/router')
 const provinsiRouter = require('./app/wilayah/router')
 const deliveryRouter = require('./app/delivery-address/router')
+const cartRouter = require('./app/cart/router');
+const orderRouter = require('./app/order/router');
+const invoiceRouter = require('/app/invoice/router');
+
+
+// cors
+app.use(cors());
 
 // middleware
 const {
@@ -28,6 +38,9 @@ app.use('/api', categoryRouter);
 app.use('/api', tagRouter);
 app.use('/api', provinsiRouter);
 app.use('/api', deliveryRouter);
+app.use('/api', cartRouter);
+app.use('/api', invoiceRouter);
+app.use('/api', orderRouter);
 app.use('/auth', authRouter);
 
 app.use(decodeToken());
