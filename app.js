@@ -18,11 +18,7 @@ const provinsiRouter = require('./app/wilayah/router')
 const deliveryRouter = require('./app/delivery-address/router')
 const cartRouter = require('./app/cart/router');
 const orderRouter = require('./app/order/router');
-const invoiceRouter = require('/app/invoice/router');
-
-
-// cors
-app.use(cors());
+const invoiceRouter = require('./app/invoice/router');
 
 // middleware
 const {
@@ -42,6 +38,9 @@ app.use('/api', cartRouter);
 app.use('/api', invoiceRouter);
 app.use('/api', orderRouter);
 app.use('/auth', authRouter);
+
+// cors
+app.use(cors());
 
 app.use(decodeToken());
 
